@@ -35,7 +35,7 @@ public class UserController {
 	UserRepository userRep;
 	
 	@GetMapping("getAll")
-	public  List<DTO> getAll() {
+	public List<DTO> getAll() {
 		
 		 List<DTO> listaUsuariosDTO= new ArrayList<DTO>();
 		 List<User> listaUsuarios=userRep.findAll();
@@ -57,10 +57,10 @@ public class UserController {
 	}
 	
 	@PostMapping(path="/getToken", consumes= MediaType.APPLICATION_JSON_VALUE)
-	public DTO autenticaUsuario(@RequestBody DatosAutenticaUsuario datos,
+	public DTO autenticaUsuario(@RequestBody User datos,
 			 HttpServletResponse response) {
 		DTO dto=new DTO();
-		User uAutenticado = userRep.findByEmailAndPassword(datos.email,datos.password);
+		User uAutenticado = userRep.findByEmailAndPassword(datos.getEmail(),datos.getPassword());
 		if(uAutenticado!=null) {	
 			dto.put("jwt", AutenticadorJWT.codificaJWT(uAutenticado));
 			return dto;
@@ -90,41 +90,29 @@ public class UserController {
 		
 		return dtoUsuario;
 	}
-
 	
-	static class DatosAltaUsuario{
-
-		int id;
-		String nombre;
-		String apellidos;
-		String email;
-		String pass;
-		String imagen;
-		String rol;
+	@PostMapping(path="/insertUser", consumes= MediaType.APPLICATION_JSON_VALUE)
+	public DTO insertUser(@RequestBody User usuario) {
 		
-		public DatosAltaUsuario(int id, String nombre, String apellidos, String email, String pass, String imagen, String rol) {
-			super();
-			this.id = id;
-			this.nombre = nombre;
-			this.apellidos = apellidos;
-			this.email = email;
-			this.pass = pass;
-			this.imagen = imagen;
-			this.rol = rol;
-			
-		}
-	}
-	
-	static class DatosAutenticaUsuario {
-		String email;
-		String password;
+		DTO salida = new DTO();
 		
-		public DatosAutenticaUsuario(String email, String password) {
-			super();
-			
-			this.email = email;
-			this.password=password;
+		User user = userRep.findByEmail(usuario.getEmail());
+		
+		if (user != null) {
+			salida.put("resultado", "existe");
+			return salida;
 		}
+		
+		try {
+			userRep.save(usuario);
+		} catch (Exception e) {
+			salida.put("resultado", "error");
+		}
+		
+		salida.put("resultado", "ok");
+		
+		return salida;
+		
 	}
 
 }

@@ -16,6 +16,7 @@ public interface UserRepository extends JpaRepository<User,Serializable>{
 	public abstract List<User> findAll();
 	public abstract User findById(int id);
 	public abstract User findByEmailAndPassword(String email, String password);
+	public abstract User findByEmail(String email);
 	
 	@Transactional
 	public abstract User save(User u);

@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @NamedQuery(name="User.findAll", query="SELECT u FROM User u")
 public class User implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -112,6 +113,12 @@ public class User implements Serializable {
 		pedido.setUser(null);
 
 		return pedido;
+	}
+	
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", apellidos=" + apellidos + ", email=" + email + ", imagen=" + imagen + ", nombre="
+				+ nombre + ", password=" + password + ", rol=" + rol + ", pedidos=" + pedidos + "]";
 	}
 
 }
