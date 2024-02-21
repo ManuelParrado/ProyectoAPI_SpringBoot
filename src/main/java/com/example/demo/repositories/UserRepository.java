@@ -22,6 +22,7 @@ public interface UserRepository extends JpaRepository<User,Serializable>{
 	public abstract User save(User u);
 	
 	@Transactional
-	public abstract void deleteById(int id);
+	public abstract void deleteByEmail(String email);
+	
 
 }

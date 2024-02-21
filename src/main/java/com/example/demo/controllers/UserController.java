@@ -34,23 +34,24 @@ public class UserController {
 	@Autowired
 	UserRepository userRep;
 	
-	@GetMapping("getAll")
-	public List<DTO> getAll() {
+	@GetMapping("/getAllUsers")
+	public List<DTO> getAllUsers() {
 		
 		 List<DTO> listaUsuariosDTO= new ArrayList<DTO>();
 		 List<User> listaUsuarios=userRep.findAll();
 		 
-		 for(User u: listaUsuarios) {
-			 DTO dtoUsuario=new DTO();
-			 dtoUsuario.put("id", u.getId());
-			 dtoUsuario.put("nombre", u.getNombre());
-			 dtoUsuario.put("apellidos", u.getApellidos());
-			 dtoUsuario.put("email", u.getEmail());
-			 dtoUsuario.put("password", u.getPassword());
-			 dtoUsuario.put("imagen", u.getImagen());
-			 dtoUsuario.put("rol", u.getRol());
-			 
-			 listaUsuariosDTO.add(dtoUsuario);	 
+		 for(User u: listaUsuarios) { 
+			 if (!"a".equals(u.getRol())) {
+				 DTO dtoUsuario=new DTO();
+				 dtoUsuario.put("id", u.getId());
+				 dtoUsuario.put("nombre", u.getNombre());
+				 dtoUsuario.put("apellidos", u.getApellidos());
+				 dtoUsuario.put("email", u.getEmail());
+				 dtoUsuario.put("password", u.getPassword());
+				 dtoUsuario.put("rol", u.getRol());
+				 
+				 listaUsuariosDTO.add(dtoUsuario);
+			 }
 		 }
 		 return	listaUsuariosDTO;
 		
@@ -80,6 +81,7 @@ public class UserController {
 		if(u!=null) {
 			
 			dtoUsuario.put("resultado","ok");
+			dtoUsuario.put("id", u.getId());
 			dtoUsuario.put("nombre", u.getNombre());
 			dtoUsuario.put("apellidos", u.getApellidos());
 			dtoUsuario.put("email", u.getEmail());
@@ -114,5 +116,48 @@ public class UserController {
 		return salida;
 		
 	}
+	
+	@PostMapping(path="/deleteByEmail", consumes= MediaType.APPLICATION_JSON_VALUE)
+	public DTO insertUser(@RequestBody String email) {
+		
+		DTO salida = new DTO();
+		
+		try {
+			userRep.deleteByEmail(email);
+		} catch (Exception e) {
+			salida.put("resultado", "error");
+		}
+		
+		salida.put("resultado", "ok");
+		
+		return salida;
+		
+	}
+	
+	@PostMapping(path="/updateUser", consumes= MediaType.APPLICATION_JSON_VALUE)
+	public DTO updateUser(@RequestBody User usuario) {
+		
+		DTO salida = new DTO();
+		
+		try {
+			User u = userRep.findById(usuario.getId());
+			
+			u.setEmail(usuario.getEmail());
+			u.setNombre(usuario.getNombre());
+			u.setApellidos(usuario.getApellidos());
+			if(usuario.getPassword() != null) u.setPassword(usuario.getPassword());
+			
+			userRep.save(u);
+		} catch (Exception e) {
+			salida.put("resultado", "error");
+		}
+		
+		salida.put("resultado", "ok");
+		
+		return salida;
+		
+	}
+	
+	
 
 }
